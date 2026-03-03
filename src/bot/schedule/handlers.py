@@ -23,9 +23,15 @@ async def handle_click(callback: CallbackQuery, connection: RabbitMQConnection, 
     range_selected = ScheduleRange(callback.data)
     worker = ScheduleWorker(connection=connection, registry=registry)
     payload = await worker.run(schedule=range_selected)
+
     text_response: list[str] = []
-    for data in payload.values():
-        game = f"{data['date']}: {data['guest']} {data['host']}"
-        text_response.append(game)
-    formatted_text = f"{'\n'.join(text_response)}"
-    await callback.message.answer(formatted_text)
+    for date, game in payload.items():
+        game_lines: list[str] = []
+        for game_id, teams in game.items():
+            game_line = f" - {teams['guest']}:{teams['host']} | {game_id}"
+            game_lines.append(game_line)
+        date_section = f"# {date}\n{'\n'.join(game_lines)}\n\n"
+        text_response.append(date_section)
+
+    formatted_text = f"```\n{'\n'.join(text_response)}```"
+    await callback.message.answer(formatted_text, parse_mode="MarkdownV2")
