@@ -1,5 +1,6 @@
 from aiogram import Bot, Dispatcher
 
+from src.bot.reports import reports_router
 from src.bot.schedule import schedule_router
 from src.bot.start import start_router
 from src.bot.update import update_router
@@ -12,5 +13,6 @@ async def create_bot(token: str):
     dp.include_router(schedule_router)
     dp.include_router(start_router)
     dp.include_router(update_router)
+    dp.include_router(reports_router)
 
     return bot, dp

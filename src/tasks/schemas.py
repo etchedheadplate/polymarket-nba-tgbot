@@ -32,5 +32,9 @@ class UpdateTask(Task):
     name: str = "update"
 
 
+class ReportTask(Task):
+    name: str = "report"
+
+
 class Result(Message):
     done: bool

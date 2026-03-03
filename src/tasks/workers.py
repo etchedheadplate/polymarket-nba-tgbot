@@ -5,7 +5,7 @@ from typing import Any
 from src.config import settings
 from src.queue import RabbitMQConnection, RabbitMQProducer
 from src.tasks.registry import Registry
-from src.tasks.schemas import Result, ScheduleTask, Task, UpdateTask
+from src.tasks.schemas import ReportTask, Result, ScheduleTask, Task, UpdateTask
 
 
 class Worker(ABC):
@@ -13,6 +13,7 @@ class Worker(ABC):
         self.connection = connection
         self.producer = RabbitMQProducer(self.connection)
         self.registry = registry
+        self._queue: str
 
     @abstractmethod
     def _construct_task(self, **params: Any) -> Task: ...
@@ -29,7 +30,7 @@ class Worker(ABC):
 
         await self.producer.send_message(
             exchange_name=settings.EXCHANGE_NAME,
-            routing_key=f"{settings.QUEUE_ORACLE}.{settings.RK_REQUEST}",
+            routing_key=f"{self._queue}.{settings.RK_REQUEST}",
             message=task.model_dump(),
         )
 
@@ -37,10 +38,21 @@ class Worker(ABC):
 
 
 class ScheduleWorker(Worker):
+    _queue = settings.QUEUE_ORACLE
+
     def _construct_task(self, **params: Any) -> Task:
         return ScheduleTask(id=self._create_id(), payload=dict(params))
 
 
 class UpdateWorker(Worker):
+    _queue = settings.QUEUE_ORACLE
+
     def _construct_task(self, **params: Any) -> Task:
         return UpdateTask(id=self._create_id(), payload=dict(params))
+
+
+class ReportWorker(Worker):
+    _queue = settings.QUEUE_REPORT
+
+    def _construct_task(self, **params: Any) -> Task:
+        return ReportTask(id=self._create_id(), payload=dict(params))
