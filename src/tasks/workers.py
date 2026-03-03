@@ -5,7 +5,7 @@ from typing import Any
 from src.config import settings
 from src.queue import RabbitMQConnection, RabbitMQProducer
 from src.tasks.registry import Registry
-from src.tasks.schemas import Result, ScheduleTask, Task
+from src.tasks.schemas import Result, ScheduleTask, Task, UpdateTask
 
 
 class Worker(ABC):
@@ -38,6 +38,9 @@ class Worker(ABC):
 
 class ScheduleWorker(Worker):
     def _construct_task(self, **params: Any) -> Task:
-        task = ScheduleTask(id=self._create_id(), payload=dict(params))
+        return ScheduleTask(id=self._create_id(), payload=dict(params))
 
-        return task
+
+class UpdateWorker(Worker):
+    def _construct_task(self, **params: Any) -> Task:
+        return UpdateTask(id=self._create_id(), payload=dict(params))

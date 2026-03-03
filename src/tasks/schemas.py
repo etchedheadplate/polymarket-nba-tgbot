@@ -28,5 +28,9 @@ class ScheduleTask(Task):
     name: str = "schedule"
 
 
+class UpdateTask(Task):
+    name: str = "update"
+
+
 class Result(Message):
     done: bool
