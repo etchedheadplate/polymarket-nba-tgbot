@@ -4,7 +4,7 @@ Telegram bot service provides access to [Polymarket NBA Reports](https://github.
 
 ## Demo
 
-![demo](media/demo.gif)
+![demo](demo/demo.gif)
 
 ## Usage
 
